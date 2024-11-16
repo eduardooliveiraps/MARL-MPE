@@ -12,4 +12,4 @@ for agent in env.agent_iter():
         action = env.action_space(agent).sample() # this is where you would insert your policy
 
     env.step(action)
-env.close()
+env.close()   
