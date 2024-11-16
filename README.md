@@ -22,19 +22,19 @@ This project requires **Python 3.8+**.
 To install the necessary dependencies:
 1. Clone this repository:
 ```bash
-    git clone <repository-url>
-    cd <repository-directory>
+git clone <repository-url>
+cd <repository-directory>
 ```
 2. Install the required packages manually:
 ```bash
-    pip install pettingzoo
-    pip install pygame
-    pip install numpy
-    pip install gymnasium
+pip install pettingzoo
+pip install pygame
+pip install numpy
+pip install gymnasium
 ```
 Or, install the dependencies from the `requirements.txt` file:
 ```bash
-    pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Usage
@@ -43,18 +43,18 @@ Or, install the dependencies from the `requirements.txt` file:
 
 The MPE environments are located in the MPE-environments directory. Each environment can be run directly by executing its corresponding Python file:
 ```bash
-    python <environment-name>.py
+python <environment-name>.py
 ```
 
 ### Running Custom MPE Environment
 To explore the custom environment:
 1. Navigate to the `custom-environment` directory:
 ```bash
-    cd custom-environment
+cd custom-environment
 ```
 2. Run the custom environment:
 ```bash
-    python main.py
+python main.py
 ```
 
 The custom environment's implementation is located in `custom-env/env/custom_environment.py`.
