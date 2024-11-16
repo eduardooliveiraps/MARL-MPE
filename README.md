@@ -1,4 +1,4 @@
-# Multi-Agent Particle Environments with Custom Implementation
+# Multi-Agent Particle Environments - Mixed Cooperative-Competitive Environments
 
 ## Overview
 Reinforcement learning (RL) has demonstrated remarkable success in solving challenging problems, from game playing to robotics, and is emerging as a key component in large-scale industrial systems. However, most successes have focused on single-agent domains, where modeling the behavior of other actors is unnecessary.
