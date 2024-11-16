@@ -60,12 +60,7 @@ python main.py
 The custom environment's implementation is located in `custom-env/env/custom_environment.py`.
 
 ## Costum Environment
-"""
-The good agents (bluish) are slower and are tasked with intercepting the adversary (reddish). 
-The adversary is faster and is rewarded for reaching landmarks (greenish) without being detected by the agents. 
-The environment includes obstacles (grayish) that block movement.
-By default, there are 3 agents, 1 adversary, 3 landmarks, and 2 obstacles.
-"""
+
 ### Environment Description
 The custom environment is a mixed cooperative-competitive environment where the good agents (bluish) are slower and are tasked with intercepting the adversary (reddish). The adversary is faster and is rewarded for reaching landmarks (greenish) without being detected by the agents. The environment includes obstacles (grayish) that block movement.
 By default, there are 3 agents, 1 adversary, 3 landmarks, and 2 obstacles.
