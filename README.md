@@ -70,4 +70,7 @@ By default, there are 3 agents, 1 adversary, 3 landmarks, and 2 obstacles.
 The custom environment is a mixed cooperative-competitive environment where the good agents (bluish) are slower and are tasked with intercepting the adversary (reddish). The adversary is faster and is rewarded for reaching landmarks (greenish) without being detected by the agents. The environment includes obstacles (grayish) that block movement.
 By default, there are 3 agents, 1 adversary, 3 landmarks, and 2 obstacles.
 
-<img src="docs/images/custom_environment.png" alt="Custom Environment" title="Custom Environment" width="500" height="500">
+<div style="text-align: center;">
+    <img src="docs/images/custom_environment.png" alt="Custom Environment" title="Custom Environment" width="450">
+</div>
+
