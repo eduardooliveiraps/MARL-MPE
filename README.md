@@ -71,6 +71,6 @@ By default, there are 3 agents, 1 adversary, 3 landmarks, and 2 obstacles.
 
 ### Real-world Applications
 This environment can be used to model various real-world scenarios, such as:
--**Cybersecurity Defense**: Agents protect a network from malicious intruders while avoiding detection.
--**Wildlife Conservation**: Drones monitor protected areas and prevent poachers from crossing boundaries.
--**Military Strategy and Defense**: Systems work together to secure areas, stopping adversaries from infiltrating. 
+- **Cybersecurity Defense**: Agents protect a network from malicious intruders while avoiding detection.
+- **Wildlife Conservation**: Drones monitor protected areas and prevent poachers from crossing boundaries.
+- **Military Strategy and Defense**: Systems work together to secure areas, stopping adversaries from infiltrating. 
