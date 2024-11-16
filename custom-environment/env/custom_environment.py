@@ -1,20 +1,11 @@
-# noqa: D212, D415
 """
-# Simple Tag
+# Custom Environment
 
-```{figure} mpe_simple_tag.gif
-:width: 140px
-:name: simple_tag
-```
-
-This environment is part of the <a href='..'>MPE environments</a>. Please read that page first for general information.
-
-| Import             | `from pettingzoo.mpe import simple_tag_v3`                 |
 |--------------------|------------------------------------------------------------|
 | Actions            | Discrete/Continuous                                        |
 | Parallel API       | Yes                                                        |
 | Manual Control     | No                                                         |
-| Agents             | `agents= [adversary_0, adversary_1, adversary_2, agent_0]` |
+| Agents             | `agents= [agent_0, agent_1, agent_2, adversary_0]` |
 | Agents             | 4                                                          |
 | Action Shape       | (5)                                                        |
 | Action Values      | Discrete(5)/Box(0.0, 1.0, (50))                            |
@@ -22,12 +13,14 @@ This environment is part of the <a href='..'>MPE environments</a>. Please read t
 | Observation Values | (-inf,inf)                                                 |
 | State Shape        | (62,)                                                      |
 | State Values       | (-inf,inf)                                                 |
+|--------------------|------------------------------------------------------------|
 
+The good agents (bluish) are slower and are tasked with intercepting the adversary (reddish). 
+The adversary is faster and is rewarded for reaching landmarks (greenish) without being detected by the agents. 
+The environment includes obstacles (grayish) that block movement.
+By default, there are 3 agents, 1 adversary, 3 landmarks, and 2 obstacles.
 
-This is a predator-prey environment. Good agents (green) are faster and receive a negative reward for being hit by adversaries (red) (-10 for each collision). Adversaries are slower and are rewarded for hitting good agents (+10 for each collision). Obstacles (large black circles) block the way. By
-default, there is 1 good agent, 3 adversaries and 2 obstacles.
-
-So that good agents don't run to infinity, they are also penalized for exiting the area by the following function:
+So that adversaries don't run to infinity, they are also penalized for exiting the area by the following function:
 
 ``` python
 def bound(x):
@@ -44,11 +37,9 @@ Agent and adversary action space: `[no_action, move_left, move_right, move_down,
 
 ### Arguments
 
-``` python
-simple_tag_v3.env(num_good=1, num_adversaries=3, num_obstacles=2, max_cycles=25, continuous_actions=False)
+``` python	
+custom_environment.env(num_good=3, num_adversaries=1, num_obstacles=2, num_landmarks=3, max_cycles=25, continuous_actions=False)
 ```
-
-
 
 `num_good`:  number of good agents
 
@@ -70,13 +61,13 @@ from pettingzoo.mpe._mpe_utils.scenario import BaseScenario
 from pettingzoo.mpe._mpe_utils.simple_env import SimpleEnv, make_env
 from pettingzoo.utils.conversions import parallel_wrapper_fn
 
-
 class raw_env(SimpleEnv, EzPickle):
     def __init__(
         self,
-        num_good=1,
-        num_adversaries=3,
+        num_good=3,
+        num_adversaries=1,
         num_obstacles=2,
+        num_landmarks=3,
         max_cycles=25,
         continuous_actions=False,
         render_mode=None,
@@ -86,12 +77,13 @@ class raw_env(SimpleEnv, EzPickle):
             num_good=num_good,
             num_adversaries=num_adversaries,
             num_obstacles=num_obstacles,
+            num_landmarks=num_landmarks,
             max_cycles=max_cycles,
             continuous_actions=continuous_actions,
             render_mode=render_mode,
         )
         scenario = Scenario()
-        world = scenario.make_world(num_good, num_adversaries, num_obstacles)
+        world = scenario.make_world(num_good, num_adversaries, num_obstacles, num_landmarks)
         SimpleEnv.__init__(
             self,
             scenario=scenario,
@@ -100,22 +92,21 @@ class raw_env(SimpleEnv, EzPickle):
             max_cycles=max_cycles,
             continuous_actions=continuous_actions,
         )
-        self.metadata["name"] = "simple_tag_v3"
-
+        self.metadata["name"] = "custom_environment_v0"
 
 env = make_env(raw_env)
 parallel_env = parallel_wrapper_fn(env)
 
-
 class Scenario(BaseScenario):
-    def make_world(self, num_good=1, num_adversaries=3, num_obstacles=2):
+    def make_world(self, num_good=3, num_adversaries=1, num_obstacles=2, num_landmarks=3):
         world = World()
         # set any world properties first
         world.dim_c = 2
         num_good_agents = num_good
         num_adversaries = num_adversaries
         num_agents = num_adversaries + num_good_agents
-        num_landmarks = num_obstacles
+        num_obstacles = num_obstacles
+        num_landmarks = num_landmarks
         # add agents
         world.agents = [Agent() for i in range(num_agents)]
         for i, agent in enumerate(world.agents):
@@ -125,57 +116,75 @@ class Scenario(BaseScenario):
             agent.name = f"{base_name}_{base_index}"
             agent.collide = True
             agent.silent = True
-            agent.size = 0.075 if agent.adversary else 0.05
-            agent.accel = 3.0 if agent.adversary else 4.0
-            agent.max_speed = 1.0 if agent.adversary else 1.3
+            agent.size = 0.05 if agent.adversary else 0.075
+            agent.accel = 4.0 if agent.adversary else 3.0
+            agent.max_speed = 1.3 if agent.adversary else 1
         # add landmarks
         world.landmarks = [Landmark() for i in range(num_landmarks)]
         for i, landmark in enumerate(world.landmarks):
-            landmark.name = "landmark %d" % i
+            landmark.name = f"landmark_{i}"
             landmark.collide = True
             landmark.movable = False
-            landmark.size = 0.2
+            landmark.size = 0.065
             landmark.boundary = False
+        world.obstacles = [Landmark() for i in range(num_obstacles)]
+        for i, obstacle in enumerate(world.obstacles):
+            obstacle.name = f"obstacle_{i}"
+            obstacle.collide = True
+            obstacle.movable = False
+            obstacle.size = 0.2
+            obstacle.boundary = True
+        world.landmarks += world.obstacles
         return world
-
+    
     def reset_world(self, world, np_random):
         # random properties for agents
         for i, agent in enumerate(world.agents):
             agent.color = (
-                np.array([0.35, 0.85, 0.35])
-                if not agent.adversary
-                else np.array([0.85, 0.35, 0.35])
+                np.array([0.95, 0.45, 0.45])
+                if agent.adversary
+                else np.array([0.15, 0.15, 0.65])
             )
-            # random properties for landmarks
+        # random properties for landmarks
         for i, landmark in enumerate(world.landmarks):
-            landmark.color = np.array([0.25, 0.25, 0.25])
+            landmark.color = np.array([0.45, 0.95, 0.45])
+        for i, obstacle in enumerate(world.obstacles):
+            obstacle.color = np.array([0.25, 0.25, 0.25])
         # set random initial states
         for agent in world.agents:
             agent.state.p_pos = np_random.uniform(-1, +1, world.dim_p)
             agent.state.p_vel = np.zeros(world.dim_p)
             agent.state.c = np.zeros(world.dim_c)
         for i, landmark in enumerate(world.landmarks):
-            if not landmark.boundary:
-                landmark.state.p_pos = np_random.uniform(-0.9, +0.9, world.dim_p)
-                landmark.state.p_vel = np.zeros(world.dim_p)
+            landmark.state.p_pos = np_random.uniform(-0.9, +0.9, world.dim_p)
+            landmark.state.p_vel = np.zeros(world.dim_p)
+        for i, obstacle in enumerate(world.obstacles):
+            obstacle.state.p_pos = np_random.uniform(-0.9, +0.9, world.dim_p)
+            obstacle.state.p_vel = np.zeros(world.dim_p)
 
     def benchmark_data(self, agent, world):
         # returns data for benchmarking purposes
         if agent.adversary:
-            collisions = 0
-            for a in self.good_agents(world):
-                if self.is_collision(a, agent):
-                    collisions += 1
-            return collisions
+            # Count how many times the adversaries have touched the landmarks
+            landmarks_reached = 0
+            for landmark in world.landmarks:
+                if self.is_collision(agent, landmark):
+                    landmarks_reached += 1
+            return landmarks_reached
         else:
-            return 0
-
+            # Count how many times the good agent intercepted the adversary
+            interceptions = 0
+            for adversary in self.adversaries(world):
+                if self.is_collision(agent, adversary):
+                    interceptions += 1
+            return interceptions
+        
     def is_collision(self, agent1, agent2):
         delta_pos = agent1.state.p_pos - agent2.state.p_pos
         dist = np.sqrt(np.sum(np.square(delta_pos)))
         dist_min = agent1.size + agent2.size
         return True if dist < dist_min else False
-
+    
     # return all agents that are not adversaries
     def good_agents(self, world):
         return [agent for agent in world.agents if not agent.adversary]
@@ -183,9 +192,8 @@ class Scenario(BaseScenario):
     # return all adversarial agents
     def adversaries(self, world):
         return [agent for agent in world.agents if agent.adversary]
-
+    
     def reward(self, agent, world):
-        # Agents are rewarded based on minimum agent distance to each landmark
         main_reward = (
             self.adversary_reward(agent, world)
             if agent.adversary
@@ -194,23 +202,33 @@ class Scenario(BaseScenario):
         return main_reward
 
     def agent_reward(self, agent, world):
-        # Agents are negatively rewarded if caught by adversaries
+        # Good agents are rewarded for catching adversaries and penalized if adversaries reach landmarks
         rew = 0
-        shape = False
+        shape = True
         adversaries = self.adversaries(world)
-        if (
-            shape
-        ):  # reward can optionally be shaped (increased reward for increased distance from adversary)
+        good_agents = self.good_agents(world)
+        
+        # Optional shaping reward based on distance to adversaries
+        if shape:
             for adv in adversaries:
-                rew += 0.1 * np.sqrt(
-                    np.sum(np.square(agent.state.p_pos - adv.state.p_pos))
+                rew -= 0.1 * min(
+                    np.sqrt(np.sum(np.square(agent.state.p_pos - adv.state.p_pos)))
+                    for agent in good_agents
                 )
+        
+        # Positive reward for catching adversaries
         if agent.collide:
             for a in adversaries:
                 if self.is_collision(a, agent):
+                    rew += 10
+        
+        # Negative reward if adversaries reach landmarks
+        for adv in adversaries:
+            for landmark in world.landmarks:
+                if self.is_collision(adv, landmark):
                     rew -= 10
-
-        # agents are penalized for exiting the screen, so that they can be caught by the adversaries
+        
+        # Penalty for going out of bounds
         def bound(x):
             if x < 0.9:
                 return 0
@@ -223,35 +241,57 @@ class Scenario(BaseScenario):
             rew -= bound(x)
 
         return rew
-
+    
     def adversary_reward(self, agent, world):
-        # Adversaries are rewarded for collisions with agents
+        # Adversaries are rewarded for reaching landmarks and negatively rewarded if caught by good agents
         rew = 0
-        shape = False
-        agents = self.good_agents(world)
-        adversaries = self.adversaries(world)
-        if (
-            shape
-        ):  # reward can optionally be shaped (decreased reward for increased distance from agents)
-            for adv in adversaries:
-                rew -= 0.1 * min(
-                    np.sqrt(np.sum(np.square(a.state.p_pos - adv.state.p_pos)))
-                    for a in agents
-                )
-        if agent.collide:
-            for ag in agents:
-                for adv in adversaries:
-                    if self.is_collision(ag, adv):
-                        rew += 10
-        return rew
+        shaped_reward = True
+        good_agents = self.good_agents(world)
+        
+        # Positive reward for reaching landmarks
+        for landmark in world.landmarks:
+            if self.is_collision(agent, landmark):
+                rew += 5  # Positive reward for reaching a landmark
 
+        # Negative reward if caught by good agents
+        for good_agent in good_agents:
+            if self.is_collision(agent, good_agent):
+                rew -= 10  # Negative reward for being caught by a good agent
+
+        # Optionally, shape the reward based on distance to the nearest landmark
+        if shaped_reward:
+            min_distance = min(
+                np.sqrt(np.sum(np.square(agent.state.p_pos - landmark.state.p_pos)))
+                for landmark in world.landmarks
+            )
+            rew -= min_distance  # Negative reward proportional to the distance to the nearest landmark
+
+        # Penalty for going out of bounds
+        def bound(x):
+            if x < 0.9:
+                return 0
+            if x < 1.0:
+                return (x - 0.9) * 10
+            return min(np.exp(2 * x - 2), 10)
+
+        for p in range(world.dim_p):
+            x = abs(agent.state.p_pos[p])
+            rew -= bound(x)
+
+        return rew
+    
     def observation(self, agent, world):
-        # get positions of all entities in this agent's reference frame
-        entity_pos = []
-        for entity in world.landmarks:
-            if not entity.boundary:
-                entity_pos.append(entity.state.p_pos - agent.state.p_pos)
-        # communication of all other agents
+        # Get positions of all landmarks in this agent's reference frame
+        landmark_pos = []
+        for landmark in world.landmarks:
+            landmark_pos.append(landmark.state.p_pos - agent.state.p_pos)
+        
+        # Get positions of all obstacles in this agent's reference frame
+        obstacle_pos = []
+        for obstacle in world.obstacles:
+            obstacle_pos.append(obstacle.state.p_pos - agent.state.p_pos)
+        
+        # Communication of all other agents
         comm = []
         other_pos = []
         other_vel = []
@@ -262,10 +302,13 @@ class Scenario(BaseScenario):
             other_pos.append(other.state.p_pos - agent.state.p_pos)
             if not other.adversary:
                 other_vel.append(other.state.p_vel)
+        
+        # Concatenate all observations
         return np.concatenate(
             [agent.state.p_vel]
             + [agent.state.p_pos]
-            + entity_pos
+            + landmark_pos
+            + obstacle_pos
             + other_pos
             + other_vel
         )
