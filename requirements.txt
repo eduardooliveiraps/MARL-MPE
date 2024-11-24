@@ -2,3 +2,5 @@ pettingzoo
 pygame
 numpy
 gymnasium
+supersuit
+stable-baselines3

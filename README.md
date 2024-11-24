@@ -31,6 +31,8 @@ pip install pettingzoo
 pip install pygame
 pip install numpy
 pip install gymnasium
+pip install supersuit
+pip install stable-baselines3
 ```
 Or, install the dependencies from the `requirements.txt` file:
 ```bash
@@ -58,6 +60,17 @@ python main.py
 ```
 
 The custom environment's implementation is located in `custom-env/env/custom_environment.py`.
+
+### Training Agents on Custom Environment
+To train agents on the custom environment:
+1. Navigate to the `custom-environment` directory:
+```bash
+cd custom-environment
+```
+2. Run the training script:
+```bash
+python train_custom_environment.py
+```
 
 ## Costum Environment
 
