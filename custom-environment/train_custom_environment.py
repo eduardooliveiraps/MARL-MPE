@@ -86,6 +86,9 @@ def eval(env_fn, num_games: int = 100, render_mode: str | None = None, **env_kwa
                 act = model.predict(obs, deterministic=True)[0]
 
             env.step(act)
+        
+        if(i % 5 == 0):
+            print("Episode", i, "Rewards: ", rewards)
     env.close()
 
     avg_reward = sum(rewards.values()) / len(rewards.values())
