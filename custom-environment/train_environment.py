@@ -1,7 +1,7 @@
 import supersuit as ss
 from stable_baselines3 import PPO
 from stable_baselines3.ppo import MlpPolicy
-import custom_environment_v0
+from pettingzoo.mpe import simple_tag_v3
 import time
 import glob
 import os
@@ -94,7 +94,7 @@ def eval(env_fn, num_games: int = 100, render_mode: str | None = None, **env_kwa
     return avg_reward
 
 if __name__ == "__main__":
-    env_fn = custom_environment_v0
+    env_fn = simple_tag_v3
     env_kwargs = {"max_cycles": 100}
 
     train_custom_environment(env_fn, steps=50_000, seed=0, **env_kwargs)
