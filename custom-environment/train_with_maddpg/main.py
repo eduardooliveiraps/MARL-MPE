@@ -1,3 +1,4 @@
+import sys
 import copy
 import torch
 from tqdm import tqdm
@@ -10,8 +11,8 @@ from replay_buffer import create_replay_buffers
 from loss import create_losses, create_optimizers, create_target_updaters
 from training import process_batch, train
 
-def main():
-    config = Config()
+def main(env_name):
+    config = Config(env_name)
     env = create_env(config)
     policies, policy_modules = create_policies(env, config)
     exploration_policies = create_exploration_policies(policies, env, config)
@@ -33,4 +34,8 @@ def main():
     train(env, collector, replay_buffers, losses, optimizers, target_updaters, exploration_policies, config)
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 2:
+        print("Usage: python main.py <environment_name>")
+        sys.exit(1)
+    env_name = sys.argv[1]
+    main(env_name)

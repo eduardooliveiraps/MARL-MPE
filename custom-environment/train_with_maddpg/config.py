@@ -2,7 +2,8 @@ import torch
 from torch import multiprocessing
 
 class Config:
-    def __init__(self):
+    def __init__(self, env_name):
+        self.env_name = env_name  # Store the environment name
         # Seed
         self.seed = 0
         torch.manual_seed(self.seed)
@@ -17,9 +18,6 @@ class Config:
         self.frames_per_batch = 1_000 # Number of team frames collected per sampling iteration
         self.n_iters = 10 # Number of sampling and training iterations
         self.total_frames = self.frames_per_batch * self.n_iters
-        # We will stop training the evaders after this many iterations,
-        # should be 0 <= iteration_when_stop_training_evaders <= n_iters
-        self.iteration_when_stop_training_evaders = self.n_iters // 2
         # Replay buffer
         self.memory_size = 1_000_000 # The replay buffer of each group can store this many frames
         # Training
@@ -36,3 +34,9 @@ class Config:
         self.n_evaders = 1
         self.n_obstacles = 2
         self.use_vmas = True # Set this to True for a great performance speedup
+
+        # Environment-specific configurations
+        if env_name == "simple_tag":
+            self.iteration_when_stop_training_evaders = self.n_iters // 2
+        elif env_name in ["simple_reference", "simple_crypto"]:
+            self.train_batch_size = 10

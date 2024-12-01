@@ -68,7 +68,7 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
 
             exploration_policies[group][-1].step(current_frames)
 
-        if iteration == config.iteration_when_stop_training_evaders:
+        if hasattr(config, 'iteration_when_stop_training_evaders') and iteration == config.iteration_when_stop_training_evaders:
             del train_group_map["agent"]
 
         for group in env.group_map.keys():
@@ -80,6 +80,7 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
                 .item()
             )
             episode_reward_mean_map[group].append(episode_reward_mean)
+            print("")
 
         pbar.set_description(
             ", ".join(
