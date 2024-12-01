@@ -80,6 +80,11 @@ For example, to train agents on the `simple_tag` environment:
 python main.py simple_tag
 ```
 
+We chose this 3 environments because of their different characteristics:
+- **Simple Tag**: Competitive environment where agents are rewarded for capturing the adversary, without communication.
+- **Simple Reference**: Cooperative environment where agents are rewarded for reaching landmarks, with communication.
+- **Simple Crypto**: Mixed cooperative-competitive environment where agents are rewarded for reaching landmarks, with communication.
+
 ## Costum Environment
 
 ### Environment Description
