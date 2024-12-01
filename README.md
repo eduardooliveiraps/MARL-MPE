@@ -7,7 +7,7 @@ This project is inspired by the paper **[Multi-Agent Actor-Critic for Mixed Coop
 - A learning approach that enables agents to develop complex multi-agent coordination strategies.
 - An ensemble-based training regimen for agents, enhancing robustness and adaptability in multi-agent environments.
 
-Using the **PettingZoo MPE environments** as a foundation, this project introduces a custom environment that builds on the principles of cooperative and competitive multi-agent RL.
+Using the **PettingZoo MPE environments** as a foundation, this project introduces a custom environment that builds on the principles of cooperative and competitive multi-agent RL. Additionally, it allows for the training of agents in Multi-Agent Particle Environments (MPE) using the MADDPG algorithm.
 
 ## References
 1. **Paper**: [Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments](https://arxiv.org/abs/1706.02275)  
@@ -33,6 +33,10 @@ pip install numpy
 pip install gymnasium
 pip install supersuit
 pip install stable-baselines3
+pip install torch
+pip install torchrl
+pip install vmas
+pip install tqdm
 ```
 Or, install the dependencies from the `requirements.txt` file:
 ```bash
@@ -43,12 +47,12 @@ pip install -r requirements.txt
 
 ### Running Standard MPE Environments
 
-The MPE environments are located in the MPE-environments directory. Each environment can be run directly by executing its corresponding Python file:
+The MPE environments are located in the `MPE-environments/envs` directory. Each environment can be run directly by executing its corresponding Python file:
 ```bash
 python <environment-name>.py
 ```
 
-### Running Custom MPE Environment
+### Running Custom MPE
 To explore the custom environment:
 1. Navigate to the `custom-environment` directory:
 ```bash
@@ -61,15 +65,19 @@ python main.py
 
 The custom environment's implementation is located in `custom-env/env/custom_environment.py`.
 
-### Training Agents on Custom Environment
-To train agents on the custom environment:
-1. Navigate to the `custom-environment` directory:
+### Training Agents on MPE using MADDPG
+To train agents on the multi-agent particle environments:
+1. Navigate to the `MPE-training-maddpg` directory:
 ```bash
-cd custom-environment
+cd MPE-training-maddpg
 ```
-2. Run the training script:
+2. Run one of the 3 multi-agent particle environments supported (simpel_tag, simple_reference, simple_crypto):
 ```bash
-python train_custom_environment.py
+python main.py <environment-name>
+```
+For example, to train agents on the `simple_tag` environment:
+```bash
+python main.py simple_tag
 ```
 
 ## Costum Environment

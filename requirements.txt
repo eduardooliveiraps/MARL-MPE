@@ -4,3 +4,7 @@ numpy
 gymnasium
 supersuit
 stable-baselines3
+torch
+torchrl
+vmas
+tqdm
