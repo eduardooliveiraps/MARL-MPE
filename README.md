@@ -71,7 +71,7 @@ To train agents on the multi-agent particle environments:
 ```bash
 cd MPE-training-maddpg
 ```
-2. Run one of the 3 multi-agent particle environments supported (simpel_tag, simple_reference, simple_crypto):
+2. Run one of the 3 multi-agent particle environments supported (`simpel_tag`, `simple_reference`, `simple_crypto`):
 ```bash
 python main.py <environment-name>
 ```
