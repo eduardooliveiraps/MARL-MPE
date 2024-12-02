@@ -2,7 +2,19 @@ from torchrl.envs import PettingZooEnv, TransformedEnv, RewardSum, VmasEnv
 
 def create_env(config):
     if not config.use_vmas:
-        if config.env_name == "simple_tag":
+        if config.env_name == "custom_environment":
+            base_env = PettingZooEnv(
+                task=f"{config.env_name}_v0",
+                parallel=True, # Use the Parallel version
+                seed=config.seed,
+                # Scenario specific
+                continuous_actions=True,
+                num_good=config.n_evaders,
+                num_adversaries=config.n_chasers,
+                num_obstacles=config.n_obstacles,
+                max_cycles=config.max_steps,
+            )
+        elif config.env_name == "simple_tag":
             base_env = PettingZooEnv(
                 task=f"{config.env_name}_v3",
                 parallel=True, # Use the Parallel version
@@ -34,10 +46,6 @@ def create_env(config):
                 max_steps=config.max_steps,
                 device=config.device,
                 seed=config.seed,
-                # Scenario specific
-                num_good_agents=config.n_evaders,
-                num_adversaries=config.n_chasers,
-                num_landmarks=config.n_obstacles,
             )
         elif config.env_name == "simple_tag":
             base_env = VmasEnv(

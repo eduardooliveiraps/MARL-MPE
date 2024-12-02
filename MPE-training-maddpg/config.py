@@ -33,10 +33,10 @@ class Config:
         self.n_chasers = 2
         self.n_evaders = 1
         self.n_obstacles = 2
-        self.use_vmas = True # Set this to True for a great performance speedup
+        self.use_vmas = False # Set this to True for a great performance speedup
 
         # Environment-specific configurations
-        if env_name in ["simple_tag", "custom_scenario"]:
+        if env_name in ["simple_tag", "custom_environment"]:
             self.iteration_when_stop_training_evaders = self.n_iters // 2
         elif env_name in ["simple_reference", "simple_crypto"]:
             self.train_batch_size = 10
