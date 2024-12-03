@@ -200,6 +200,62 @@ class Scenario(BaseScenario):
             else self.agent_reward(agent, world)
         )
         return main_reward
+    
+    def agent_reward(self, agent, world):
+        # Good agents are rewarded for catching adversaries and penalized if adversaries reach landmarks
+        rew = 0
+        shape = True
+        adversaries = self.adversaries(world)
+        good_agents = self.good_agents(world)
+        
+        # Optional shaping reward based on distance to adversaries
+        if shape:
+            for adv in adversaries:
+                rew += 0.1 * min(
+                    np.sqrt(np.sum(np.square(agent.state.p_pos - adv.state.p_pos)))
+                    for agent in good_agents
+                )
+        
+        # Positive reward for catching adversaries
+        if agent.collide:
+            for a in adversaries:
+                if self.is_collision(a, agent):
+                    rew += 10
+        
+        # Negative reward if adversaries reach landmarks
+        for adv in adversaries:
+            for landmark in world.landmarks:
+                if self.is_collision(adv, landmark):
+                    rew -= 5
+
+        return rew
+
+    def adversary_reward(self, agent, world):
+        # Adversaries are rewarded for reaching landmarks and negatively rewarded if caught by good agents
+        rew = 0
+        shaped_reward = True
+        good_agents = self.good_agents(world)
+        
+        # Positive reward for reaching landmarks
+        for landmark in world.landmarks:
+            if self.is_collision(agent, landmark):
+                rew += 10  # Increased positive reward for reaching a landmark
+
+        # Negative reward if caught by good agents
+        for good_agent in good_agents:
+            if self.is_collision(agent, good_agent):
+                rew -= 10  # Reduced negative reward for being caught by a good agent
+
+        # Optionally, shape the reward based on distance to the nearest landmark
+        if shaped_reward:
+            min_distance = min(
+                np.sqrt(np.sum(np.square(agent.state.p_pos - landmark.state.p_pos)))
+                for landmark in world.landmarks
+            )
+            rew -= 0.05 * min_distance  # Reduced negative reward proportional to the distance to the nearest landmark
+
+        return rew
+    """
     def agent_reward(self, agent, world):
         # Good agents are rewarded for catching adversaries and penalized if adversaries reach landmarks
         rew = 0
@@ -254,6 +310,7 @@ class Scenario(BaseScenario):
             rew -= 0.05 * min_distance  # Reduced negative reward proportional to the distance to the nearest landmark
 
         return rew
+    """
     """
     def agent_reward(self, agent, world):
         # Good agents are rewarded for catching adversaries and penalized if adversaries reach landmarks
