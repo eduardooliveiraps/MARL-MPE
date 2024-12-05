@@ -71,8 +71,8 @@ To train agents on the multi-agent particle environments:
 ```bash
 cd MPE-training-maddpg
 ```
-2.The Script can receive 5 arguments (1 mandatory, 4 optional) the mandatory argument must be the 1st argument, the other 4 do not have a specific order.
-2.1<environment-name>
+2. The Script can receive 5 arguments (1 mandatory, 4 optional) the mandatory argument must be the 1st argument, the other 4 do not have a specific order.
+   2.1<environment-name>
     This is the first argument and its the only one who need to be in order
             >example:
                 >'python main.py simple_tag'
