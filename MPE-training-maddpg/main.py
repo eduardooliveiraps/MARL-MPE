@@ -133,6 +133,9 @@ def run_env(env_name, steps, render, alg, vmas, policy_flag):
         model_trained_name = list_models(f'./models/{env_name}')
         trained_policy = torch.load(f'./models/{env_name}/{model_trained_name}')
         env.rollout(int(steps),trained_policy)
+    else:
+        env.rollout(int(steps))
+    '''
     elif(policy_flag==False and vmas==False):       
         env.rollout(int(steps))
     elif(policy_flag==True and vmas==True):
@@ -141,7 +144,7 @@ def run_env(env_name, steps, render, alg, vmas, policy_flag):
         render_vmas(env,steps,trained_policy=trained_policy)
     elif(policy_flag==False and vmas==True):
         render_vmas(env,steps)
-
+    '''
     env.close()
 
 
