@@ -2,6 +2,7 @@ import torch
 from tensordict import TensorDictBase
 from tqdm import tqdm
 import copy
+import csv
 
 def process_batch(batch: TensorDictBase, env) -> TensorDictBase:
     for group in env.group_map.keys():
@@ -32,6 +33,7 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
     )
     episode_reward_mean_map = {group: [] for group in env.group_map.keys()}
     train_group_map = copy.deepcopy(env.group_map)
+    results = []
 
     for iteration, batch in enumerate(collector):
         current_frames = batch.numel()
@@ -71,6 +73,7 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
         if hasattr(config, 'iteration_when_stop_training_evaders') and iteration == config.iteration_when_stop_training_evaders:
             del train_group_map["agent"]
 
+        iteration_results = [iteration]
         for group in env.group_map.keys():
             episode_reward_mean = (
                 batch.get(("next", group, "episode_reward"))[
@@ -80,7 +83,10 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
                 .item()
             )
             episode_reward_mean_map[group].append(episode_reward_mean)
+            iteration_results.append(episode_reward_mean)
             print("")
+        
+        results.append(iteration_results)
 
         pbar.set_description(
             ", ".join(
@@ -92,3 +98,11 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
             refresh=False,
         )
         pbar.update()
+
+        '''
+        with open('training_results_iddpg.csv', 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Iteration', 'Adversary', 'Agent'])
+            for result in results:
+                writer.writerow(result)
+        '''
