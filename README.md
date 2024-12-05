@@ -160,10 +160,12 @@ After running the script you will be able to choose between 4 options:
 The models will be saved in the folder **models** and divided by **envs**. <br>
 Example:<br>
 \models<br>
-   |<br>
-   |---> \simple_tag_v3<br>
-   |<br>
-   |---> \custom_environment_v0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---> \simple_tag_v3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--->simple_tag_v3_1733433595_True__300.pth<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---> \custom_environment_v0<br>
 
 The name of the model will follow this logic {**env name**}\_{**timestamp da data**}\_{**algorithm**}\_{**vmas if exist**}\_{**steps**}.pth 
 
@@ -174,7 +176,7 @@ Example:
 - timestamp da data = 1733433595
 - algorithm = True (This means that the algorithm we use is MADDPG otherwise will be false)
 - vmas doens't exist so we dont have this in the name
-- steps =
+- steps = 300
 
 
 ## Custom Environment
