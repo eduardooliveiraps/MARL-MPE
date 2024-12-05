@@ -126,6 +126,7 @@ python main.py simple_tag -alg MADDPG
 4. render
 
 If you want to render and see what's happen with your environment you need to pass -render
+This just work with Pettingzoo, if you pass the vmas this will not work.
 example:
 ```bash
  python main.py simple_tag -steps 100 -alg maddpg -render
