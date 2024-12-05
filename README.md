@@ -155,6 +155,9 @@ After running the script you will be able to choose between 4 options:
 - **Train the environment**: This option will start the training with the environment you choose. If you do not pass, the number of steps will be 100, more than enough for some environments. The training is saved every 10% of the iterations.
 - **Retrain the environment**: This option will retraining with the environment you choose.Perfect if, for some reason, you need to stop the training or if the steps that you choose wasn't enough for learning well. If you do not pass, the number of steps will be 100, more than enough for some environments. The training is saved every 10% of the iterations.
 
+###Saved models
+
+The models will be saved in the folder **models** and divided by **envs**. The name follow this logic {**env name**}_{**timestamp da data**}_{**algorithm**}_{**vmas if exist**}_{**steps**}.pth for example:
 
 
 ## Custom Environment
