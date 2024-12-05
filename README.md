@@ -73,45 +73,7 @@ cd MPE-training-maddpg
 ```
 
 2. The Script can receive 5 arguments (1 mandatory, 4 optional) the mandatory argument must be the 1st argument, the other 4 do not have a specific order.
-   2.1 <environment-name>
-      This is the first argument and its the only one who need to be in order
-         example:
-            ```bash
-                python main.py simple_tag
-            ```
-         The program can be trained with this environments:
-                 - custom_environment_v0
-                 - simple_adversary_v3
-                 - simple_crypto_v3
-                 - simple_push_v3
-                 - simple_reference_v3
-                 - simple_speaker_listener_v4
-                 - simple_spread_v3
-                 - simple_tag_v3
-                 - simple_v3
-                 - simple_world_comm_v3
-         You can read more about them here:
-         https://pettingzoo.farama.org/environments/mpe/
-2.2<steps>
-        This is the number of steps you want to execute, by default it is 100, which means you don't need to pass this argument if you don't want to.
-        To pass the argument, you need to write -steps <number-of-steps>
-        >example:
-            >'python main.py simple_tag -steps 100'
-2.3<alg>
-        The program can be trained with this algorithms:
-                - MADDPG (Multi Agent Deep Deterministic Policy Gradient)
-                - IDDPG (Independent Deep Deterministic Policy Gradient)
-        To pass the argument, you need to write -alg <acronym-of-the-name>, by default it uses MADDPG so you don't need to pass the argument
-        > example:
-            > 'python main.py simple_tag -alg MADDPG'
-2.4<render>
-        If you want to render and see what's happen with your environment you need to pass -render
-        > example:
-            > 'python main.py simple_tag -steps 100 -alg maddpg -render'
-2.5<vmas>
-        If you want to use vmas insted of pettingzoo you need to pass -vmas
-        > example:
-            > 'python main.py simple_tag -steps 100 -alg maddpg -render -vmas'
+   
 ```bash
 python main.py <environment-name>
 ```
