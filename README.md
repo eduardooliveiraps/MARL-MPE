@@ -146,6 +146,17 @@ In this work we chose this 3 environments (not counting our custom environment) 
 - **Simple Reference**: Cooperative environment where agents are rewarded for reaching landmarks, with communication.
 - **Simple Crypto**: Mixed cooperative-competitive environment where agents are rewarded for reaching landmarks, with communication.
 
+## Script
+
+After running the script you will be able to choose between 4 options:
+
+- **Run the environment with training**: This option will run the environment that you choose with the training module that you choose too.
+- **Run the environment without training**: This option will run the environment that you choose with a random policy (if you want to see how it looks the environment).
+- **Train the environment**: This option will start the training with the environment you choose. If you do not pass, the number of steps will be 100, more than enough for some environments. The training is saved every 10% of the iterations.
+- **Retrain the environment**: This option will retraining with the environment you choose.Perfect if, for some reason, you need to stop the training or if the steps that you choose wasn't enough for learning well. If you do not pass, the number of steps will be 100, more than enough for some environments. The training is saved every 10% of the iterations.
+
+
+
 ## Custom Environment
 
 ### Environment Description
