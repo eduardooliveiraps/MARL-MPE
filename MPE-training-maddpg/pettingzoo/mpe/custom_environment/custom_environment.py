@@ -150,11 +150,14 @@ class Scenario(BaseScenario):
             landmark.color = np.array([0.45, 0.95, 0.45])
         for i, obstacle in enumerate(world.obstacles):
             obstacle.color = np.array([0.25, 0.25, 0.25])
+        goal = np_random.choice(world.landmarks)
+        goal.color = np.array([0.15, 0.65, 0.15])
         # set random initial states
         for agent in world.agents:
             agent.state.p_pos = np_random.uniform(-1, +1, world.dim_p)
             agent.state.p_vel = np.zeros(world.dim_p)
             agent.state.c = np.zeros(world.dim_c)
+            agent.goal_a = goal
         for i, landmark in enumerate(world.landmarks):
             landmark.state.p_pos = np_random.uniform(-0.9, +0.9, world.dim_p)
             landmark.state.p_vel = np.zeros(world.dim_p)
@@ -220,31 +223,86 @@ class Scenario(BaseScenario):
         if agent.collide:
             for a in adversaries:
                 if self.is_collision(a, agent):
-                    rew += 10
+                    rew += 20
         
-        # Negative reward if adversaries reach landmarks
-        for adv in adversaries:
-            for landmark in world.landmarks:
-                if self.is_collision(adv, landmark):
-                    rew -= 5
+        # Rewarded based on how close any good agent is to the goal landmark, and how far the adversary is from it
+        shaped_reward = True
+        shaped_adv_reward = True
 
-        return rew
+        # Calculate negative reward for adversary
+        adversary_agents = self.adversaries(world)
+        if shaped_adv_reward:  # distance-based adversary reward
+            adv_rew = sum(
+                np.sqrt(np.sum(np.square(a.state.p_pos - a.goal_a.state.p_pos)))
+                for a in adversary_agents
+            )
+        else:  # proximity-based adversary reward (binary)
+            adv_rew = 0
+            for a in adversary_agents:
+                if (
+                    np.sqrt(np.sum(np.square(a.state.p_pos - a.goal_a.state.p_pos)))
+                    < 2 * a.goal_a.size
+                ):
+                    adv_rew -= 5
+
+        # Calculate positive reward for agents
+        good_agents = self.good_agents(world)
+        if shaped_reward:  # distance-based agent reward
+            pos_rew = -min(
+                np.sqrt(np.sum(np.square(a.state.p_pos - a.goal_a.state.p_pos)))
+                for a in good_agents
+            )
+        else:  # proximity-based agent reward (binary)
+            pos_rew = 0
+            if (
+                min(
+                    np.sqrt(np.sum(np.square(a.state.p_pos - a.goal_a.state.p_pos)))
+                    for a in good_agents
+                )
+                < 2 * agent.goal_a.size
+            ):
+                pos_rew += 5
+            pos_rew -= min(
+                np.sqrt(np.sum(np.square(a.state.p_pos - a.goal_a.state.p_pos)))
+                for a in good_agents
+            )
+        
+        def bound(x):
+            if x < 0.9:
+                return 0
+            if x < 1.0:
+                return (x - 0.9) * 10
+            return min(np.exp(2 * x - 2), 10)
+
+        for p in range(world.dim_p):
+            x = abs(agent.state.p_pos[p])
+            rew -= bound(x)
+
+        return rew + pos_rew + adv_rew
 
     def adversary_reward(self, agent, world):
         # Adversaries are rewarded for reaching landmarks and negatively rewarded if caught by good agents
         rew = 0
         shaped_reward = True
         good_agents = self.good_agents(world)
-        
-        # Positive reward for reaching landmarks
-        for landmark in world.landmarks:
-            if self.is_collision(agent, landmark):
-                rew += 10  # Increased positive reward for reaching a landmark
+        shaped_reward_value = 0
+        adv_rew = 0
+        shaped_reward = True
+        if shaped_reward:  # distance-based reward
+            aux = -np.sqrt(
+                np.sum(np.square(agent.state.p_pos - agent.goal_a.state.p_pos))
+            )
+        else:  # proximity-based reward (binary)
+            if (
+                np.sqrt(np.sum(np.square(agent.state.p_pos - agent.goal_a.state.p_pos)))
+                < 2 * agent.goal_a.size
+            ):
+                adv_rew += 5
 
         # Negative reward if caught by good agents
         for good_agent in good_agents:
             if self.is_collision(agent, good_agent):
-                rew -= 10  # Reduced negative reward for being caught by a good agent
+                rew -= 20  # Reduced negative reward for being caught by a good agent
 
         # Optionally, shape the reward based on distance to the nearest landmark
         if shaped_reward:
@@ -253,8 +311,19 @@ class Scenario(BaseScenario):
                 for landmark in world.landmarks
             )
             rew -= 0.05 * min_distance  # Reduced negative reward proportional to the distance to the nearest landmark
+        
+        def bound(x):
+            if x < 0.9:
+                return 0
+            if x < 1.0:
+                return (x - 0.9) * 10
+            return min(np.exp(2 * x - 2), 10)
 
-        return rew
+        for p in range(world.dim_p):
+            x = abs(agent.state.p_pos[p])
+            rew -= bound(x)
+            
+        return rew + adv_rew + shaped_reward_value
     """
     def agent_reward(self, agent, world):
         # Good agents are rewarded for catching adversaries and penalized if adversaries reach landmarks
@@ -473,7 +542,7 @@ class Scenario(BaseScenario):
         # Concatenate all observations
         return np.concatenate(
             [agent.state.p_vel]
-            + [agent.state.p_pos]
+            + [agent.goal_a.state.p_pos - agent.state.p_pos]
             + landmark_pos
             + obstacle_pos
             + other_pos

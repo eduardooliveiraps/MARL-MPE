@@ -6,7 +6,7 @@ def create_critics(env, config):
     critics = {}
     for group, agents in env.group_map.items():
         share_parameters_critic = True # Can change for each group
-        MADDPG = True # IDDPG if False, can change for each group
+        MADDPG = config.algorithm # IDDPG if False, can change for each group
 
         # This module applies the lambda function: reading the action and observation entries for the group
         # and concatenating them in a new ``(group, "obs_action")`` entry

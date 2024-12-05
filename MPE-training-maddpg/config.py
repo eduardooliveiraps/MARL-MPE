@@ -2,10 +2,10 @@ import torch
 from torch import multiprocessing
 
 class Config:
-    def __init__(self, env_name):
+    def __init__(self, env_name,steps,algorithm,vmas):
         self.env_name = env_name  # Store the environment name
         # Seed
-        self.seed = 0
+        self.seed = 42
         torch.manual_seed(self.seed)
         # Devices
         is_fork = multiprocessing.get_start_method() == "fork"
@@ -14,9 +14,11 @@ class Config:
             if torch.cuda.is_available() and not is_fork
             else torch.device("cpu")
         )
+
+        self.algorithm = True if algorithm == 'MADDPG' else False
         # Sampling
         self.frames_per_batch = 1_000 # Number of team frames collected per sampling iteration
-        self.n_iters = 10 # Number of sampling and training iterations
+        self.n_iters = int(steps) # Number of sampling and training iterations
         self.total_frames = self.frames_per_batch * self.n_iters
         # Replay buffer
         self.memory_size = 1_000_000 # The replay buffer of each group can store this many frames
@@ -33,7 +35,7 @@ class Config:
         self.n_chasers = 2
         self.n_evaders = 1
         self.n_obstacles = 2
-        self.use_vmas = False # Set this to True for a great performance speedup
+        self.use_vmas = vmas # Set this to True for a great performance speedup
 
         # Environment-specific configurations
         if env_name in ["simple_tag", "custom_environment"]:

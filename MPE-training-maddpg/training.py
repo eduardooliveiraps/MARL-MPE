@@ -2,6 +2,9 @@ import torch
 from tensordict import TensorDictBase
 from tqdm import tqdm
 import copy
+import calendar
+import time
+import os
 
 def process_batch(batch: TensorDictBase, env) -> TensorDictBase:
     for group in env.group_map.keys():
@@ -22,8 +25,21 @@ def process_batch(batch: TensorDictBase, env) -> TensorDictBase:
                 .expand((*group_shape, 1)),
             )
     return batch
+def create_name(config):
+    current_GMT = time.gmtime()
+    ts = calendar.timegm(current_GMT)
+    aux = 'vmas' if config.use_vmas==True else ''
+    return f'{config.env_name}_{ts}_{config.algorithm}_{aux}_{config.n_iters}.pth'
+
+def save(policy,config,name):
+    directory = f'./models/{config.env_name}'
+    os.makedirs(directory, exist_ok=True)
+    torch.save(policy,f'{directory}/{name}')
 
 def train(env, collector, replay_buffers, losses, optimizers, target_updaters, exploration_policies, config):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('Training Started')
+    name = create_name(config)
     pbar = tqdm(
         total=config.n_iters,
         desc=", ".join(
@@ -32,7 +48,8 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
     )
     episode_reward_mean_map = {group: [] for group in env.group_map.keys()}
     train_group_map = copy.deepcopy(env.group_map)
-
+    count=0
+    checkpoint_interval = config.n_iters // 10
     for iteration, batch in enumerate(collector):
         current_frames = batch.numel()
         batch = process_batch(batch, env)
@@ -67,7 +84,7 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
                 target_updaters[group].step()
 
             exploration_policies[group][-1].step(current_frames)
-
+        count+=1
         if hasattr(config, 'iteration_when_stop_training_evaders') and iteration == config.iteration_when_stop_training_evaders:
             del train_group_map["agent"]
 
@@ -80,15 +97,23 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
                 .item()
             )
             episode_reward_mean_map[group].append(episode_reward_mean)
-            print("")
-
+        
+        
         pbar.set_description(
             ", ".join(
                 [
-                    f"episode_reward_mean_{group} = {episode_reward_mean_map[group][-1]}"
-                    for group in env.group_map.keys()
+                      
+                      f"episode_reward_mean_{group} = {episode_reward_mean_map[group][-1]}"
+                        for group in env.group_map.keys()
+   
                 ]
-            ),
+            )+"\n...Saving...'" if count % checkpoint_interval == 0 or count == config.n_iters else '',
             refresh=False,
         )
         pbar.update()
+        
+        if(count % checkpoint_interval == 0 or count == config.n_iters):
+            save(collector.policy,config,name)
+    save(collector.policy,config,name)
+    print("Training finished\nPress enter to continue...")
+    input()
