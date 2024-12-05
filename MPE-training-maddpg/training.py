@@ -5,6 +5,7 @@ import copy
 import calendar
 import time
 import os
+import csv
 
 def process_batch(batch: TensorDictBase, env) -> TensorDictBase:
     for group in env.group_map.keys():
@@ -50,6 +51,8 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
     train_group_map = copy.deepcopy(env.group_map)
     count=0
     checkpoint_interval = config.n_iters // 10
+    results = []
+
     for iteration, batch in enumerate(collector):
         current_frames = batch.numel()
         batch = process_batch(batch, env)
@@ -88,6 +91,7 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
         if hasattr(config, 'iteration_when_stop_training_evaders') and iteration == config.iteration_when_stop_training_evaders:
             del train_group_map["agent"]
 
+        iteration_results = [iteration]
         for group in env.group_map.keys():
             episode_reward_mean = (
                 batch.get(("next", group, "episode_reward"))[
@@ -117,3 +121,11 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
     save(collector.policy,config,name)
     print("Training finished\nPress enter to continue...")
     input()
+
+    '''
+    with open('training_results_iddpg.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Iteration', 'Adversary', 'Agent'])
+        for result in results:
+            writer.writerow(result)
+    '''
