@@ -71,27 +71,27 @@ To train agents on the multi-agent particle environments:
 ```bash
 cd MPE-training-maddpg
 ```
-#### Script Arguments
+
 2. The Script can receive 5 arguments (1 mandatory, 4 optional) the mandatory argument must be the 1st argument, the other 4 do not have a specific order.
    2.1 <environment-name>
-    This is the first argument and its the only one who need to be in order
-            example:
+      This is the first argument and its the only one who need to be in order
+         example:
             ```bash
                 python main.py simple_tag
             ```
-            The program can be trained with this environments:
-                    - custom_environment_v0
-                    - simple_adversary_v3
-                    - simple_crypto_v3
-                    - simple_push_v3
-                    - simple_reference_v3
-                    - simple_speaker_listener_v4
-                    - simple_spread_v3
-                    - simple_tag_v3
-                    - simple_v3
-                    - simple_world_comm_v3
-            You can read more about them here:
-            https://pettingzoo.farama.org/environments/mpe/
+         The program can be trained with this environments:
+                 - custom_environment_v0
+                 - simple_adversary_v3
+                 - simple_crypto_v3
+                 - simple_push_v3
+                 - simple_reference_v3
+                 - simple_speaker_listener_v4
+                 - simple_spread_v3
+                 - simple_tag_v3
+                 - simple_v3
+                 - simple_world_comm_v3
+         You can read more about them here:
+         https://pettingzoo.farama.org/environments/mpe/
 2.2<steps>
         This is the number of steps you want to execute, by default it is 100, which means you don't need to pass this argument if you don't want to.
         To pass the argument, you need to write -steps <number-of-steps>
