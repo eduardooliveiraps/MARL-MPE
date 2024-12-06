@@ -5,7 +5,7 @@ class Config:
     def __init__(self, env_name,steps,algorithm,vmas):
         self.env_name = env_name  # Store the environment name
         # Seed
-        self.seed = 42
+        self.seed = 0
         torch.manual_seed(self.seed)
         # Devices
         is_fork = multiprocessing.get_start_method() == "fork"

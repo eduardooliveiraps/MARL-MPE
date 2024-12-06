@@ -26,6 +26,7 @@ def process_batch(batch: TensorDictBase, env) -> TensorDictBase:
                 .expand((*group_shape, 1)),
             )
     return batch
+
 def create_name(config):
     current_GMT = time.gmtime()
     ts = calendar.timegm(current_GMT)
@@ -39,8 +40,11 @@ def save(policy,config,name):
 
 def train(env, collector, replay_buffers, losses, optimizers, target_updaters, exploration_policies, config):
     os.system('cls' if os.name == 'nt' else 'clear')
+    
     print('Training Started')
+
     name = create_name(config)
+    
     pbar = tqdm(
         total=config.n_iters,
         desc=", ".join(
@@ -52,7 +56,7 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
     count=0
     checkpoint_interval = config.n_iters // 10
     results = []
-
+    last_save = 0
     for iteration, batch in enumerate(collector):
         current_frames = batch.numel()
         batch = process_batch(batch, env)
@@ -92,6 +96,7 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
             del train_group_map["agent"]
 
         iteration_results = [iteration]
+
         for group in env.group_map.keys():
             episode_reward_mean = (
                 batch.get(("next", group, "episode_reward"))[
@@ -111,13 +116,20 @@ def train(env, collector, replay_buffers, losses, optimizers, target_updaters, e
                         for group in env.group_map.keys()
    
                 ]
-            )+"\n...Saving...'" if count % checkpoint_interval == 0 or count == config.n_iters else '',
+            ),
             refresh=False,
         )
+        if count % checkpoint_interval == 0 or count == config.n_iters:
+            last_save = count
+            pbar.set_postfix_str("...Saving...")
+            save(collector.policy,config,name)
+        else:
+            if(last_save!=0):
+                pbar.set_postfix_str(f"last iteration save : {last_save}")
+            else:
+                pbar.set_postfix_str("")
         pbar.update()
         
-        if(count % checkpoint_interval == 0 or count == config.n_iters):
-            save(collector.policy,config,name)
     save(collector.policy,config,name)
     print("Training finished\nPress enter to continue...")
     input()

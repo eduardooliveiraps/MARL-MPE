@@ -56,7 +56,7 @@ def create_exploration_policies(policies, env, config):
             policies[group],
             AdditiveGaussianModule(
                 spec=policies[group].spec,
-                annealing_num_steps=config.total_frames // 2, # Number of frames after which sigma is sigma_end
+                annealing_num_steps=config.total_frames, # Number of frames after which sigma is sigma_end
                 action_key=(group, "action"),
                 sigma_init=0.9, # Initial value of the sigma
                 sigma_end=0.1, # Final value of the sigma
