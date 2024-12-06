@@ -71,56 +71,113 @@ To train agents on the multi-agent particle environments:
 ```bash
 cd MPE-training-maddpg
 ```
-2.The Script can receive 5 arguments (1 mandatory, 4 optional) the mandatory argument must be the 1st argument, the other 4 do not have a specific order.
-2.1<environment-name>
-    This is the first argument and its the only one who need to be in order
-            >example:
-                >'python main.py simple_tag'
-            The program can be trained with this environments:
-                    - custom_environment_v0
-                    - simple_adversary_v3
-                    - simple_crypto_v3
-                    - simple_push_v3
-                    - simple_reference_v3
-                    - simple_speaker_listener_v4
-                    - simple_spread_v3
-                    - simple_tag_v3
-                    - simple_v3
-                    - simple_world_comm_v3
-            You can read more about them here:
-            https://pettingzoo.farama.org/environments/mpe/
-2.2<steps>
-        This is the number of steps you want to execute, by default it is 100, which means you don't need to pass this argument if you don't want to.
-        To pass the argument, you need to write -steps <number-of-steps>
-        >example:
-            >'python main.py simple_tag -steps 100'
-2.3<alg>
-        The program can be trained with this algorithms:
-                - MADDPG (Multi Agent Deep Deterministic Policy Gradient)
-                - IDDPG (Independent Deep Deterministic Policy Gradient)
-        To pass the argument, you need to write -alg <acronym-of-the-name>, by default it uses MADDPG so you don't need to pass the argument
-        > example:
-            > 'python main.py simple_tag -alg MADDPG'
-2.4<render>
-        If you want to render and see what's happen with your environment you need to pass -render
-        > example:
-            > 'python main.py simple_tag -steps 100 -alg maddpg -render'
-2.5<vmas>
-        If you want to use vmas insted of pettingzoo you need to pass -vmas
-        > example:
-            > 'python main.py simple_tag -steps 100 -alg maddpg -render -vmas'
+
+2. Run the script 'main.py':
 ```bash
-python main.py <environment-name>
+ python main.py <arguments>
 ```
-For example, to train agents on the `simple_tag` environment:
+
+### Script Arguments
+The Script can receive 5 arguments (1 mandatory, 4 optional) the mandatory argument must be the 1st argument, the other 4 do not have a specific order.
+#### Arguments:
+
+1. environment-name (Mandatory)
+
+This is the first argument and its the only one who need to be in order
+example:
 ```bash
 python main.py simple_tag
 ```
+The program can be trained with this environments:<br>
+   - custom_environment_v0<br>
+   - simple_adversary_v3<br>
+   - simple_crypto_v3<br>
+   - simple_push_v3<br>
+   - simple_reference_v3<br>
+   - simple_speaker_listener_v4<br>
+   - simple_spread_v3<br>
+   - simple_tag_v3<br>
+   - simple_v3<br>
+   - simple_world_comm_v3<br>
+   
+You can read more about them here:<br>
+https://pettingzoo.farama.org/environments/mpe/
 
-We chose this 3 environments (not counting our custom environment) because of their different characteristics:
+2. steps
+   
+This is the number of steps you want to execute, by default it is 100, which means you don't need to pass this argument if you don't want to.
+To pass the argument, you need to write -steps <number-of-steps>
+example:
+```bash
+python main.py simple_tag -steps 100
+```
+
+3. alg
+   
+The program can be trained with this algorithms:
+    - MADDPG (Multi Agent Deep Deterministic Policy Gradient)
+    - IDDPG (Independent Deep Deterministic Policy Gradient)
+To pass the argument, you need to write -alg <acronym-of-the-name>, by default it uses MADDPG so you don't need to pass the argument
+example:
+```bash
+python main.py simple_tag -alg MADDPG
+```
+
+4. render
+
+If you want to render and see what's happen with your environment you need to pass -render
+This just work with Pettingzoo, if you pass the vmas this will not work.
+example:
+```bash
+ python main.py simple_tag -steps 100 -alg maddpg -render
+```
+
+5. vmas
+   
+If you want to use vmas insted of pettingzoo you need to pass -vmas
+example:
+```bash
+python main.py simple_tag -steps 100 -alg maddpg -render -vmas
+```
+
+
+In this work we chose this 3 environments (not counting our custom environment) because of their different characteristics:
 - **Simple Tag**: Competitive environment where agents are rewarded for capturing the adversary, without communication.
 - **Simple Reference**: Cooperative environment where agents are rewarded for reaching landmarks, with communication.
 - **Simple Crypto**: Mixed cooperative-competitive environment where agents are rewarded for reaching landmarks, with communication.
+
+## Script
+
+After running the script you will be able to choose between 4 options:
+
+- **Run the environment with training**: This option will run the environment that you choose with the training module that you choose too.
+- **Run the environment without training**: This option will run the environment that you choose with a random policy (if you want to see how it looks the environment).
+- **Train the environment**: This option will start the training with the environment you choose. If you do not pass, the number of steps will be 100, more than enough for some environments. The training is saved every 10% of the iterations.
+- **Retrain the environment**: This option will retraining with the environment you choose.Perfect if, for some reason, you need to stop the training or if the steps that you choose wasn't enough for learning well. If you do not pass, the number of steps will be 100, more than enough for some environments. The training is saved every 10% of the iterations.
+
+### Saved models
+
+The models will be saved in the folder **models** and divided by **envs**. <br>
+Example:<br>
+\\**models**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---> \\**simple_tag_v3**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--->**simple_tag_v3_1733433595_True__300.pth**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---> \\**custom_environment_v0**<br>
+
+The name of the model will follow this logic {**env name**}\_{**timestamp da data**}\_{**algorithm**}\_{**vmas if exist**}\_{**steps**}.pth 
+
+Example:
+**simple_tag_v3_1733433595_True__300.pth**
+
+- env name = simple_tag_v3
+- timestamp da data = 1733433595
+- algorithm = True (This means that the algorithm we use is MADDPG otherwise will be false)
+- vmas doens't exist so we dont have this in the name
+- steps = 300
+
 
 ## Custom Environment
 
